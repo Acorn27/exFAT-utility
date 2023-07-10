@@ -14,9 +14,9 @@ struct command
         print_dir,  // recursively print dir/sub-dir
         del_file;   // delete file from disk image
     
-    std::string infileName[100],
-                outfileName[100],
-                deleteFile[100];
+    char* infileName;
+    char* outfileName;
+    char* deleteFile;
 };  
 
 // parse command line input into a defined command structure
