@@ -1,0 +1,1 @@
+Install bazel Ubuntu(WSL): https://bazel.build/install/ubuntu 
