@@ -1,8 +1,6 @@
 #ifndef MAIN_PARSE_COMMAND_H
 #define MAIN_PARSE_COMMAND_H
 
-#include <string>
-
 struct command 
 {
     int infile,     // input file
