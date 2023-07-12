@@ -1,7 +1,8 @@
 cc_test(
-    name = "demo-test",
-    srcs = ["demo-test.cc"],
+    name = "parse-unittest",
+    srcs = ["parse_unittest.cc"],
     deps = [
-        "@googletest//:gtest_main",
+        "@gtest//:gtest_main",
+        "//lib:parse-command"
     ],
 )

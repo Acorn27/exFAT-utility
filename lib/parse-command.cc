@@ -32,22 +32,28 @@ command* parse(int argc, char** argv)
             command_ptr->del_file = 1;
             command_ptr->deleteFile = new char[sizeof(optarg)];
             strcpy(command_ptr->deleteFile, optarg);
+            break;
         case 'c':
             command_ptr->copy = 1;
             break;
         case 'h':
             command_ptr->help = 1;
+            break;
         case 'v':
             command_ptr->verify = 1;
+            break;
         case 'e':
             command_ptr->extract = 1;
+            break;
         case 'p':
             command_ptr->print_dir = 1;
+            break;
         case '?':
             if (optopt == 'i' || optopt == 'o' || optopt == 'd')
                 std::cout << "Option " << optopt << " require an argument" << std::endl;
             else if (isprint(optopt))
                 std::cout << "Unkown option " << optopt << std::endl;
+            break;
         default:
             break;
         }

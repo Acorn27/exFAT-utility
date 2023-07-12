@@ -4,5 +4,5 @@ cc_library(
     name = "parse-command",
     srcs = ["parse-command.cc"],
     hdrs =  ["parse-command.h"],
-    visibility = ["//main:__pkg__"],
+    visibility = ["//visibility:public"],
 )
