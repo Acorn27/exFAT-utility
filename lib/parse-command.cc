@@ -3,10 +3,10 @@
 #include <getopt.h>
 #include <string.h>
 
-command* parse(int argc, char** argv)
+command *parse(int argc, char **argv)
 {
     // dynamically alocated command structure
-    command* command_ptr = new command;
+    command *command_ptr = new command;
 
     // counter for getopt
     int c;
@@ -14,10 +14,10 @@ command* parse(int argc, char** argv)
 
     // <option>: => there is an string follow an options. EX (-i inputFile.txt)
     // <option>  => yes/no option like verify
-    while ((c = getopt(argc, argv, "i:o:d:hvep")) != 1)
-
-    switch (c)
+    while ((c = getopt(argc, argv, "i:o:d:hvepc")) != -1)
     {
+        switch (c)
+        {
         case 'i':
             command_ptr->infile = 1;
             command_ptr->infileName = new char[sizeof(optarg)];
@@ -50,13 +50,15 @@ command* parse(int argc, char** argv)
             break;
         case '?':
             if (optopt == 'i' || optopt == 'o' || optopt == 'd')
-                std::cout << "Option " << optopt << " require an argument" << std::endl;
+                std::cout << "Option " << char(optopt) << " require an argument" << std::endl;
             else if (isprint(optopt))
-                std::cout << "Unkown option " << optopt << std::endl;
-            break;
+                std::cout << "Unkown option " << char(optopt) << std::endl;
+            return (NULL);
         default:
             break;
+            return (NULL);
         }
+    }
 
     return command_ptr;
 }
