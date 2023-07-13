@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "lib/parse-command.h"
+#include "parse-command.h"
 #include <iostream>
 
 TEST(pase_argument, AllOptionPresent)
