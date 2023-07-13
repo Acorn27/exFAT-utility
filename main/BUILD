@@ -6,5 +6,6 @@ cc_binary(
     copts = ["-Ilib/include"],
     deps = [
         "//lib:parse-command",
+        "//lib:copy-image",
     ],
 )
