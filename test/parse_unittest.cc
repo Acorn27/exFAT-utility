@@ -1,23 +1,32 @@
 #include "gtest/gtest.h"
 #include "lib/parse-command.h"
+#include <iostream>
 
 TEST(pase_argument, AllOptionPresent)
 {   
-    int argc = 7;
-    char* fakeArgv[argc];
-    // const_cast to suppress warning
-    fakeArgv[0] = const_cast<char*>("exfat");                          
-    fakeArgv[1] = const_cast<char*>("-i");                  
-    fakeArgv[2] = const_cast<char*>("data.txt");
-    fakeArgv[3] = const_cast<char*>("-o");
-    fakeArgv[4] = const_cast<char*>("result.txt");
-    fakeArgv[5] = const_cast<char*>("-c");
-    fakeArgv[6] = nullptr;
 
-    //command* result = parse(argc, fakeArgv);
-    //EXPECT_EQ(result->outfile, 1);
-    //EXPECT_EQ(result->copy, 1);
-    //EXPECT_EQ(result->infileName, "data.txt");
-    //EXPECT_EQ(result->outfileName, "result.txt");
-    EXPECT_EQ(1,3);
+    // mock argv[]
+    char arg0[] = "exfat";
+    char arg1[] = "-i";
+    char arg2[] = "data.txt";
+    char arg3[] = "-o";
+    char arg4[] = "result.txt";
+    char arg5[] = "-c";
+    char arg6[] = "-v";
+    char* argv[] = { &arg0[0], &arg1[0], &arg2[0], &arg3[0], &arg4[0], &arg5[0], &arg6[0], NULL };
+
+    // mock argv
+    int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+
+    command* result = parse(argc, argv);
+    
+    EXPECT_FALSE(result == nullptr);
+    EXPECT_EQ(result->copy, 1);
+    EXPECT_EQ(result->verify, 1);
+    EXPECT_EQ(result->help, 0);
+    EXPECT_EQ(result->extract, 0);
+    EXPECT_EQ(strcmp(result->infileName,"data.txt"), 0);
+    EXPECT_EQ(strcmp(result->outfileName,"result.txt"), 0);
+    
+    clean_up(result);
 }
