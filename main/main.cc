@@ -4,7 +4,7 @@ Project: exFAT utility - modified version
 Modification: 07/10/2023
 */
 #include <iostream>
-#include "lib/parse-command.h"
+#include "parse-command.h"
 
 int main(int argc, char** argv)
 {
