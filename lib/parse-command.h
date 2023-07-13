@@ -17,7 +17,11 @@ struct command
     char* deleteFile;
 };  
 
+typedef struct command command;
+
 // parse command line input into a defined command structure
 command* parse(int argc, char** argv);
+
+void clean_up(command* command_ptr);
 
 #endif
