@@ -13,8 +13,6 @@ int main(int argc, char** argv)
     std::cout << "output_file "<< command_ptr->outfileName << std::endl;
 
     /* free dynamically allocated memmory*/
-    free(command_ptr->infileName);
-    free(command_ptr->outfileName);
-    free(command_ptr);
+    clean_up(command_ptr);
     return 0;
 }
