@@ -1,2 +1,5 @@
+cd into example before run bash file
+
 Install exFAT utilities if not already installed
 sudo apt-get install exfat-utils
+
