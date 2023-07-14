@@ -8,7 +8,7 @@ cd ..
 bazel build main:exfat
 
 # calling valgrind for leak check
-valgrind --leak-check=full bazel-bin/main/exfat -i images/exfat.img -o doncare.txt -c
+valgrind --leak-check=full bazel-bin/main/exfat -i images/exfat.img -o images/exfat_clone.img -c
 
 #clean up
 cd example
