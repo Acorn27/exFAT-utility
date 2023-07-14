@@ -6,11 +6,11 @@
 // get file descriptor
 int getFileDescriptor(char* sourceName, int flag);
 
-// obtain file size to passed to mmap using stat Tstruct and fstat
+// obtain file size to passed to mmap using stat struct and fstat
 // see: https://man7.org/linux/man-pages/man2/fstat.2.html
 size_t getFileSize(int fileDescriptor);
 
-// obtain file size to passed to mmap using stat Tstruct and fstat
+// obtain file size to passed to mmap using stat struct and fstat
 // see: https://man7.org/linux/man-pages/man2/fstat.2.html
 size_t getFileSize(int fileDescriptor);
 
