@@ -17,7 +17,14 @@ int main(int argc, char** argv)
 
     if (command_ptr->copy)
     {
-        copy(command_ptr->infileName, command_ptr->outfileName);
+        if (copy(command_ptr->infileName, command_ptr->outfileName) == 1)
+        {
+            std::cout << "Failed to copy from " << command_ptr->infileName << " to " << command_ptr->outfileName << std::endl;
+        }
+        else
+        {
+            std::cout << "Succesfully copy from " << command_ptr->infileName << " to " << command_ptr->outfileName << std::endl;
+        }
     }
 
     /* free dynamically allocated memmory*/
