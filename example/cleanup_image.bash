@@ -8,9 +8,9 @@ sudo umount ../"$image_folder"/"$mount_point"
 
 # clean up image and mounted folder
 rm -rf ../"$image_folder"/"$mount_point"
-rm ../"$image_folder"/"$image_name"
+rm ../"$image_folder"/*.img -f
 rmdir ../"$image_folder"
 
-# Additional information and instructions
+# Additional information
 echo "exFAT image unmounted and removed successfully."
 echo "Keep up with the good habit!"
