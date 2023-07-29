@@ -7,5 +7,6 @@ cc_binary(
     deps = [
         "//lib:parse-command",
         "//lib:copy-image",
+        "//lib:verify-image"
     ],
 )
