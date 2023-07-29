@@ -47,7 +47,7 @@ int copy(char *sourceName, char* desName)
         close(inFileDes);
         return 1;
     }
-
+    
     // create output file using fopen() for read and write
     // man fopen
     int outFileDes = getFileDescriptor(desName, O_RDWR | O_CREAT);
