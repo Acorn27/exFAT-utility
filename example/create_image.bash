@@ -3,7 +3,7 @@
 #Set the desired image's name and location
 image_name="exfat.img"
 image_folder="images"
-image_location=".."         # create image folder in parent directory instead of insde example folder
+image_location="."         # create image folder in current directory instead of insde example folder
 mount_point="image_directory"
 
 #Create and Navigate to the image foler
@@ -26,7 +26,7 @@ sudo mkfs.exfat "$image_name"
 mkdir "$mount_point"
 
 # Step 7: Mount the exFAT image
-sudo mount -t exfat -o loop "$image_name" "$mount_point"
+sudo mount -o loop "$image_name" "$mount_point"
 
 # Additional information and instructions
 echo "exFAT image created and mounted successfully."
