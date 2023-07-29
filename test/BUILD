@@ -36,3 +36,16 @@ cc_test(
         "//lib:copy-image",
     ]
 )
+
+# verify image
+cc_test(
+    name = "verify-unittest",
+    srcs = ["verify-unittest.cc"],
+    copts = ["-Iexternal/gtest/include",
+            "-Ilib/include"
+    ],
+    deps = [
+        "@googletest//:gtest_main",
+        "//lib:verify-image",
+    ]
+)
