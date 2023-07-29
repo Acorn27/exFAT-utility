@@ -36,7 +36,14 @@ int main(int argc, char** argv)
     // verify
     if (command_ptr->verify)
     {
-        verify_image(command_ptr->infileName);
+        if (verify_image(command_ptr->infileName))
+        {
+            std::cout << "Passed: Main and Backup Boot Sector are equal" << std::endl;
+        }
+        else
+        {
+            std::cout << "Failed: Main and Backup Boot Sector are not equal" << std::endl;
+        }
     }
 
     /* free dynamically allocated memmory*/
