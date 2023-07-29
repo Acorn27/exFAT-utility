@@ -31,3 +31,14 @@ cc_library(
     copts = ["-Ilib/include"],
     visibility = ["//visibility:public"],
 )
+
+# verify image
+cc_library(
+    name = "verify-image",
+    srcs = ["verify-image.cc"],
+    hdrs =  ["include/verify-image.h",
+            "include/exfat.h",],
+    copts = ["-Ilib/include"],
+    deps = ["//lib:file-handler"],
+    visibility = ["//visibility:public"],
+)
