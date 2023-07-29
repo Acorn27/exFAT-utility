@@ -4,6 +4,8 @@
 #include <unistd.h>         // for close(file_des)
 #include <sys/mman.h>       // for mmap()
 #include <sys/stat.h>       // for fstat()
+#include <cmath>            // for pow()
+#include <assert.h>         // for assert()
 
 #include "exfat.h"
 #include "file-handler.h"
@@ -82,6 +84,21 @@ int print_metedata(void* pa)
     std::cout << "Volume serial number:\t" << MB->VolumeLength << std::endl;
     // to be continue... check microsoft's exfat documentations
 
+    int offset = 12 * pow(2,(int)MB->BytesPerSectorShift);
+    Main_Boot *BB = (Main_Boot *)((char *)pa + offset);
+    std::cout << "Jump Boot:\t" << BB->JumpBoot << std::endl;
+    std::cout << "File System:\t" << BB->FileSystemName << std::endl;
+    std::cout << "Must be zero:\t" << BB->MustBeZero << std::endl;
+    std::cout << "Jump Boot" << BB->JumpBoot << std::endl;
+    std::cout << "Partition offset:\t" << BB->PartitionOffset << std::endl;
+    std::cout << "Volume length:\t" << BB->VolumeLength << std::endl;
+    std::cout << "Fat Offset:\t" << BB->FatOffset << std::endl;
+    std::cout << "Fat length:\t" << BB->FatLength << std::endl;
+    std::cout << "Cluster Heap Offset:\t" << BB->ClusterHeapOffset << std::endl;
+    std::cout << "Cluster count:\t" << BB->ClusterCount << std::endl;
+    std::cout << "Volume serial number:\t" << BB->VolumeLength << std::endl;
+
+
     return 0;
 }
 
@@ -103,5 +120,51 @@ int clean_up(int file_descriptor, size_t fileSize, void* pa)
 
     // close file descriptor
     close(file_descriptor);
+    return 0;
+}
+
+// modified main/backup sector of exfat image to intentially failed checksum
+int modified_image(char* imageName)
+{
+    // error check
+    if (imageName == NULL)
+    {
+        std::cout << "Null arguments are not allowed" << std::endl;
+        return 1;
+    }
+
+    // get file desciptor
+    int fileDescriptor = getFileDescriptor(imageName, O_RDWR);
+    assert(fileDescriptor != -1);
+
+    // retrive file size
+    size_t imageSize = getFileSize(fileDescriptor);
+
+    // cast to supress warning
+    assert(imageSize != (size_t)(-1));
+
+    void *sourceMappedAddr = mmap(NULL,
+                                  imageSize,
+                                  PROT_READ | PROT_WRITE,
+                                  MAP_PRIVATE,
+                                  fileDescriptor,
+                                  0);
+    // error check
+    if (sourceMappedAddr == MAP_FAILED)
+    {
+        std::cout << "Failed to map the input file into memory" << std::endl;
+        close(fileDescriptor);
+        return 1;
+    }
+    Main_Boot *MB = (Main_Boot *)sourceMappedAddr;
+    int offset = 12 * pow(2,(int)MB->BytesPerSectorShift);
+    Main_Boot *BB = (Main_Boot *)((char *)sourceMappedAddr + offset);
+
+    // modfied file name of backup region
+    (BB->FileSystemName)[0] = 'K';       // new FileSystemName is now kxfat
+
+    // cleanup
+    clean_up(fileDescriptor, imageSize, sourceMappedAddr);
+    // return success
     return 0;
 }
