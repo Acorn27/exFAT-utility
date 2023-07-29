@@ -20,4 +20,7 @@ int print_metedata(void* pa);
 // clean_up by unmap and close file descriptor
 int clean_up(int file_descriptor, size_t fileSize, void* pa);
 
+// modified main/backup sector of exfat image to intentially failed checksum
+int modified_image(void* pa);
+
 #endif
