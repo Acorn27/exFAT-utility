@@ -1,17 +1,23 @@
 /*
 Author: Mai Tran
 Project: exFAT utility - modified version
-Modification: 07/10/2023
+Modification: 07/19/2023
 */
 #include <iostream>
 #include "parse-command.h"
 #include "copy-image.h"
+#include "verify-image.h"
 
 int main(int argc, char** argv)
 {
     command* command_ptr = parse(argc, argv);
     if (command_ptr == NULL)
     {
+        return 1;
+    }
+    if (command_ptr->infileName == NULL)
+    {   
+        std::cout << "Input file name is required!" << std::endl;
         return 1;
     }
 
@@ -25,6 +31,12 @@ int main(int argc, char** argv)
         {
             std::cout << "Succesfully copy from " << command_ptr->infileName << " to " << command_ptr->outfileName << std::endl;
         }
+    }
+
+    // verify
+    if (command_ptr->verify)
+    {
+        verify_image(command_ptr->infileName);
     }
 
     /* free dynamically allocated memmory*/
