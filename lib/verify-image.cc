@@ -6,6 +6,7 @@
 #include <memory.h> // for memcmp
 #include <stdint.h> // for UInt32
 #include <sys/stat.h>
+#include <cmath>    // for pow(0)
 
 #include "exfat.h"
 #include "verify-image.h"
@@ -24,101 +25,58 @@ uint32_t BootChecksum(char* Sectors, short BytesPerSector)
         }
         Checksum = ((Checksum & 1) ? 0x80000000 : 0) + (Checksum >> 1) + (uint32_t)Sectors[Index];
     }
-
     return Checksum;
 }
 
 int verify_image(char *imageName)
 {
-    // open the file system image file
-   int fd = open(imageName, O_RDWR);
-   if (fd == -1)
-   {
-      perror("file open: ");
-      exit(0);
-   }
+    // error check
+    if (imageName == NULL)
+    {
+        std::cout << "Null arguments are not allowed" << std::endl;
+        return 1;
+    }
 
-   off_t size = 0;
-   struct stat statbuf;
-   if (fstat(fd, &statbuf))
-   {
-      perror("stat of file:");
-      exit(0);
-   }
-   size = statbuf.st_size;
-   printf("The file size is %ld\n", size);
+    // get file desciptor
+    int fileDescriptor = getFileDescriptor(imageName, O_RDWR);
+    assert(fileDescriptor != -1);
 
-   // mmap the entire file into memory
-   // every data item we reference, will be relative to fp...
-   void *fp = (void *)mmap(NULL,
-                           size,
-                           PROT_READ | PROT_WRITE,
-                           MAP_PRIVATE,
-                           fd,
-                           0); // note the offset
+    // retrive file size
+    size_t imageSize = getFileSize(fileDescriptor);
 
-   if (fp == (void *)-1)
-   {
-      perror("mmap:");
-      exit(0);
-   }
+    // cast to supress warning
+    assert(imageSize != (size_t)(-1));
 
-   // first, is the Main Boot record
-   Main_Boot *MB = (Main_Boot *)fp;
-
-   // print out some things we care about
-
-   printf("FileSystemName %s\n", MB->FileSystemName); // warning, not required to be terminated
-   printf("\n");
-   printf("BytesPerSectorShift %d\n", MB->BytesPerSectorShift);
-   printf("SectorsPerClusterShift %d\n", MB->SectorsPerClusterShift);
-   printf("NumberOfFats %d\n", MB->NumberOfFats);
-    // // error check
-    // if (imageName == NULL)
-    // {
-    //     std::cout << "Null arguments are not allowed" << std::endl;
-    //     return 1;
-    // }
-
-    // // get file desciptor
-    // int fileDescriptor = getFileDescriptor(imageName, O_RDWR);
-    // assert(fileDescriptor != -1);
-
-    // // retrive file size
-    // size_t imageSize = getFileSize(fileDescriptor);
-
-    // // cast to supress warning
-    // assert(imageSize != (size_t)(-1));
-
-    // void *sourceMappedAddr = mmap(NULL,
-    //                               imageSize,
-    //                               PROT_READ | PROT_WRITE,
-    //                               MAP_PRIVATE,
-    //                               fileDescriptor,
-    //                               0);
-    // // error check
-    // if (sourceMappedAddr == MAP_FAILED)
-    // {
-    //     std::cout << "Failed to map the input file into memory" << std::endl;
-    //     close(fileDescriptor);
-    //     return 1;
-    // }
-
-    // print_metedata(sourceMappedAddr);
-
-    // // Main_Boot *MB = (Main_Boot *)sourceMappedAddr;
-    // // Main_Boot *BB = (Main_Boot *)(sourceMappedAddr + sizeof(Main_Boot));
-
-    // // std::cout << "Byte persector is" << MB->BytesPerSectorShift << std::endl;
-    // // std::cout << "File system name is" << MB->FileSystemName << std::endl;
-
-    // // uint32_t mb_checksum = BootChecksum((char*)(exfat->M_Boot), exfat->M_Boot->BytesPerSectorShift);
-    // // uint32_t bu_checksum = BootChecksum((char*)(exfat->B_Boot), exfat->B_Boot->BytesPerSectorShift);
-    // // std::cout << "Main Boot check sum: " << mb_checksum << std::endl;
-    // // std::cout << "Backup check sum: " << bu_checksum << std::endl;
+    void *sourceMappedAddr = mmap(NULL,
+                                  imageSize,
+                                  PROT_READ | PROT_WRITE,
+                                  MAP_PRIVATE,
+                                  fileDescriptor,
+                                  0);
+    // error check
+    if (sourceMappedAddr == MAP_FAILED)
+    {
+        std::cout << "Failed to map the input file into memory" << std::endl;
+        close(fileDescriptor);
+        return 1;
+    }
 
 
-    // //clean up and return sucess
-    // clean_up(fileDescriptor, imageSize, sourceMappedAddr);
-    // return 0;
+    // cast MB and BB
+    // compute offset of Backup Region
+    // Read microsoft docs: Backup is 12 section offset from MainBoot
+    // size of each offset is store in BytesPerSectorShift as log of 2
+    Main_Boot *MB = (Main_Boot *)sourceMappedAddr;
+    int offset = 12 * pow(2,(int)MB->BytesPerSectorShift);
+    Main_Boot *BB = (Main_Boot *)((char *)sourceMappedAddr + offset);
+
+    // compute checksum
+    uint32_t mb_checksum = BootChecksum((char*)(MB), MB->BytesPerSectorShift);
+    uint32_t bu_checksum = BootChecksum((char*)(BB), MB->BytesPerSectorShift);
+    std::cout << "Main Boot CheckSum:\t" << mb_checksum << std::endl;
+    std::cout << "Backup Boot CheckSum:\t" << bu_checksum << std::endl;
+    
+    //clean up and return comparision
+    clean_up(fileDescriptor, imageSize, sourceMappedAddr);
+    return mb_checksum == bu_checksum;
 }
